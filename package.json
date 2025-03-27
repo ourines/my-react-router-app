@@ -8,7 +8,9 @@
     "dev": "react-router dev",
     "preview": "vite preview",
     "start": "wrangler dev",
-    "typecheck": "wrangler types && react-router typegen && tsc -b"
+    "typecheck": "wrangler types && react-router typegen && tsc -b",
+    "dev:node": "tsx --watch server/node.ts",
+    "start:node": "pnpm run build && cross-env NODE_ENV=production tsx server/node.ts"
   },
   "dependencies": {
     "hono": "^4.7.5",
@@ -19,12 +21,15 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^0.1.11",
+    "@hono/node-server": "^1.14.0",
     "@react-router/dev": "^7.3.0",
     "@tailwindcss/vite": "^4.0.0",
     "@types/node": "^20",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.1",
+    "cross-env": "^7.0.3",
     "tailwindcss": "^4.0.0",
+    "tsx": "^4.19.3",
     "typescript": "^5.7.2",
     "vite": "^6.2.1",
     "vite-tsconfig-paths": "^5.1.4",
