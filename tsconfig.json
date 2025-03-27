@@ -28,7 +28,6 @@
     ],
     "types": [
       "node",
-      "@cloudflare/workers-types",
       "vite/client"
     ],
     "target": "ES2022",

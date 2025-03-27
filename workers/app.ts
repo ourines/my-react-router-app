@@ -1,33 +1,39 @@
+import { Hono } from "hono";
+import { logger } from "hono/logger";
 import { createRequestHandler } from "react-router";
+import { getRequestContext } from "utils/env";
+import { api } from "server/api";
+import { poweredBy } from "hono/powered-by";
+// Create a simple Hono app
+const app = new Hono<{ Bindings: CloudflareEnvironment }>();
 
-// 记录 createRequestHandler 的内容
-console.log('createRequestHandler:', createRequestHandler);
+// Add logger middleware
+app.use("*", logger());
 
+// Mount API sub-application to /api path
+app.route("/api", api);
+
+app.use("*", poweredBy({
+  serverName: "Cloudflare Workers and HonoJS"
+}));
+
+// Create React Router request handler
 const requestHandler = createRequestHandler(
   () => {
-    // 记录动态导入的模块
     console.log('Importing server build...');
-    const module = import("virtual:react-router/server-build");
-    module.then(m => console.log('Server build loaded:', m));
-    return module;
+    return import("virtual:react-router/server-build");
   },
   import.meta.env.MODE
 );
 
-// 记录环境模式
-console.log('Environment mode:', import.meta.env.MODE);
+// Handle all other routes with React Router
+app.use("*", async (c) => {
+  console.log('Web request received:', c.req.url);
 
-export default {
-  async fetch(request, env, ctx) {
-    console.log('Request received:', request.url);
-    console.log('Environment:', env);
-    console.log('Context:', ctx);
-    
-    const response = await requestHandler(request, {
-      cloudflare: { env, ctx },
-    });
-    
-    console.log('Response:', response.status, response.headers);
-    return response;
-  },
-} satisfies ExportedHandler<CloudflareEnvironment>;
+  const context = getRequestContext(c);
+
+  return await requestHandler(c.req.raw, context);
+});
+
+// Export the Cloudflare Worker
+export default app;
