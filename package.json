@@ -9,8 +9,8 @@
     "preview": "vite preview",
     "start": "wrangler dev",
     "typecheck": "wrangler types && react-router typegen && tsc -b",
-    "dev:node": "tsx --watch server/node.ts",
-    "start:node": "pnpm run build && cross-env NODE_ENV=production tsx server/node.ts"
+    "dev:node": "tsx --watch server/node-server.ts",
+    "start:node": "pnpm run build && cross-env NODE_ENV=production tsx server/adapters/node.ts"
   },
   "dependencies": {
     "hono": "^4.7.5",
